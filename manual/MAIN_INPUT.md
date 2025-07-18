@@ -26,6 +26,7 @@ The following describes all supported namelist with their variables, including i
     - [sequence_power](#psequence_power)
     - [sequence_random](#profile_random)
   - [beam](#beam)
+  - [alter_beam](#alter_beam)
   - [field](#field)
   - [importdistribution](#importdistribution)
   - [importbeam](#importbeam)
@@ -65,6 +66,7 @@ The namelist `setup` is a mandatory namelist and should be the first in the inpu
 - `exclude_energy_output` (*bool, false*): Flag to suppress the datasets in the output file for the mean energy and energy spread of the electron beam.
 - `exclude_aux_output` (*bool, false*): Flag to suppress the auxiliary datasets in the output file. In the moment it is the long-range longitudinal electric field as seen by the electrons.
 - `exclude_current_output` (*bool, true*): Flag to reduce the size of the current dataset for the electron beam. Under most circumstances the current profile is constant and only the initial current profile is written out. However, simulation with one-4-one set to `true` and sorting events the current profile might change. Example are ESASE/HGHG schemes. By setting the flag to false the current profile is written out at each output step similar to radiation power and bunching profile.
+- `exclude_twiss_output` (*bool, true*): Flag to reduce the size of the twiss (emittance, beta and alpha values) dataset for the electron beam. Under most circumstances the twiss parameters are constant and only the initial values are written out. However, simulation with one-4-one set to `true` and sorting events the twiss parameters might change. Example are ESASE/HGHG schemes. By setting the flag to false the twiss values written out at each output step similar to radiation power and bunching profile.
 - `exclude_field_dump` (*bool, false*): Exclude the field dump to `.fld.h5`.
 - `write_meta_file` (*bool, false*): Write a metadata file.
 - `semaphore_file_name` (*string, <derived from rootname>*): Providing a file name for the semaphore file always switches on writing the "done" semaphore file, overriding 'write_semaphore_file' flag. This allows to switch on semaphore functionality just by specifying corresponding command line argument -- no modification of G4 input file needed.
@@ -244,6 +246,19 @@ This namelist initiates the generation of the particle distribution to be kept i
 
 [Back](#supported-namelists)
 
+
+### alter_beam
+This applies a transformation of the electron beam distribution after its generation. Primary example is the combination of the energy modulation by an external laser and the 
+transformation of a succeeding magnetic chicane. Note that this namelist can applied several times, e.g. to model EEHG. 
+For `one4one` simulation it is recommended to following this namelist with a sort command.
+
+- `dgamma` (*double, 0 or profile label*): Amplitude of the sinusoidal modulation in units of the electron rest mass
+- `phase` (*double, 0 or profile label*): Phase of the energy modulation in units of radians.
+- `lambda` (*double, 800e-9*):  wavelength in $m$ of the external energy modulation
+- `r56` (*double, 0*): R56 element of the magnetic chicane in $m$
+
+[Back](#supported-namelists)
+
 <div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 ### field
@@ -337,7 +352,9 @@ The modules controls the import of a Genesis 1.3 field file to replace the inter
 
 - `file` (*string, \<empty>*): File name of a hdf5 compliant datafile to contain the slice-wise particle distribution. It has to follow the internal Genesis 1.3 syntax.
 - `harmonic` (*int, 1*) defines the harmonic for the given Genesis run.
-- `time` (*bool, true*): If the time window hasn’t be defined it allows to run Genesis with the imported distribution in scan mode, when set to `false`. This would disable all slippage and long-range collective effects in the simulation
+- `time` (*bool, true*): If the time window hasn’t been defined it allows to run Genesis with the imported distribution in scan mode, when set to `false`. This would disable all slippage and long-range collective effects in the simulation
+- `attenuation` (*double, 1.0*): apply an on-the-flight scaling factor to the field to be imported, without the need of modifying the original field file.
+- `offset` (*double, 0*): currently unused.
 
 [Back](#supported-namelists)
 
@@ -438,11 +455,12 @@ This namelist initiate the actually tracking through the undulator and then writ
 - `output_step` (*int, 1*): Defines the number of integration steps before the particle and field distribution is analyzed for output.
 - `field_dump_step` (*int, 0*): Defines the number of integration steps before a field dump is written. Be careful because for time-dependent simulation it can generate many large output files.
 - `beam_dump_step` (*int, 0*): Defines the number of integration steps before a particle dump is written. Be careful because for time-dependent simulation it can generate many large output files.
--  `sort_step` (*int,0*): Defines the number of steps of integration before the particle distribution is sorted. Works only for one-4-one simulations.
+- `sort_step` (*int,0*): Defines the number of steps of integration before the particle distribution is sorted. Works only for one-4-one simulations.
 - `s0` (*double, <taken from TIME module>*): Option to override the default time window start from the TIME module.
 - `slen` (*double, <taken from TIME module>*): Option to override the default time window length from the TIME module.
 - `field_dump_at_undexit` (*bool, false*): Field dumps at the exit of the undulator (one dump for each undulator in the expanded lattice).
 - `bunchharm` (*int, 1*): Bunching harmonic output setting. Must be >= 1.
+- `exclusive_harmonics` (*bool, false*): If set to true than only the requested bunching harmonic is included in output. Otherwise all harmonic sup and including the specified harmonics are included.
 
 
 [Back](#supported-namelists)

@@ -1,6 +1,8 @@
 #include <algorithm> // for std::find
+#include <utility>
 #include "LatticeParser.h"
 #include "SeriesManager.h"
+#include "SeriesParser.h"
 
 LatticeParser::LatticeParser()
 {
@@ -11,6 +13,40 @@ LatticeParser::~LatticeParser()
 {
 }
 
+void LatticeParser::addSequence(const std::string& label_in, std::string argument_in, int rank, SeriesManager *sm)
+{
+    vector <string> par;
+    string fld,val;
+    std::map <string,string> maparg;
+    maparg.insert({"label",label_in});
+    std::string seqtype;
+
+    this->chop(std::move(argument_in),&par);
+    for (int i=0;i<par.size();i++) {
+        if (par[i].empty()) {  // in the case of C: COR = {};  one is getting a zero length string.
+            continue;
+        }
+        size_t pos = par[i].find_first_of("=");
+        if (pos == string::npos) {
+            if (rank == 0) {
+                cout << "*** Warning: Ignoring invalid format: " << par[i] << " for element " << label_in << endl;
+            }
+            continue;
+        }
+        fld = par[i].substr(0, pos);
+        val = par[i].erase(0, pos + 1);
+        this->trim(fld);
+        this->trim(val);
+        if (fld.compare("type") == 0){
+            seqtype = "&sequence_"+val;
+        } else {
+            maparg.insert({fld, val});
+        }
+    }
+    auto *seriesparser = new SeriesParser;
+    seriesparser->init(rank, &maparg, seqtype, sm);
+    delete seriesparser;
+}
 
 bool LatticeParser::parse(string file, string line, int rank, vector<Element *> &lat, SeriesManager *sm)
 {
@@ -127,6 +163,17 @@ bool LatticeParser::parse(string file, string line, int rank, vector<Element *> 
   if (error){ return false; }
 
   // -------------------------------------------------------------
+  // step 2.5 - extract seuqence definition and add them to seriesmanager.
+
+  for(std::size_t i = 0; i < type.size(); i++){
+      if (type.at(i).compare("sequ") ==0) {
+          this->addSequence(label.at(i),argument.at(i),rank,sm);
+      }
+  }
+
+
+
+    // -------------------------------------------------------------
   // step 3 - resolving all references
 
   
@@ -181,7 +228,7 @@ bool LatticeParser::parse(string file, string line, int rank, vector<Element *> 
     if (type[idx].compare("undu")==0){ error=false; lat.push_back(this->parseID(idx,rank,z,sm)); }
     if (type[idx].compare("drif")==0){ error=false; lat.push_back(this->parseDrift(idx,rank,z));}
     if (type[idx].compare("corr")==0){ error=false; lat.push_back(this->parseCorrector(idx,rank,z));}
-    if (type[idx].compare("chic")==0){ error=false; lat.push_back(this->parseChicane(idx,rank,z)); }
+    if (type[idx].compare("chic")==0){ error=false; lat.push_back(this->parseChicane(idx,rank,z,sm)); }
     if (type[idx].compare("mark")==0){ error=false; lat.push_back(this->parseMarker(idx,rank,z)); }
     if (type[idx].compare("phas")==0){ error=false; lat.push_back(this->parsePhaseshifter(idx,rank,z,sm)); }
     if (error) { 
@@ -329,7 +376,7 @@ Corrector *LatticeParser::parseCorrector(int idx,int rank, double zin)
 }
 
 
-Chicane *LatticeParser::parseChicane(int idx,int rank, double zin)
+Chicane *LatticeParser::parseChicane(int idx,int rank, double zin, SeriesManager *sm)
 {
   Chicane *ele=new Chicane;
 
@@ -358,7 +405,7 @@ Chicane *LatticeParser::parseChicane(int idx,int rank, double zin)
     this->trim(fld);
     bool found=false;
     if (fld.compare("l")==0)    { ele->l=atof(val.c_str());  found=true; };
-    if (fld.compare("delay")==0){ ele->delay=atof(val.c_str()); found=true; };
+    if (extractParameterValue(fld,val,sm,rank, "delay", &ele->delay)){ found=true; };
     if (fld.compare("lb")==0)   { ele->lb=atof(val.c_str()); found=true; };
     if (fld.compare("ld")==0)   { ele->ld=atof(val.c_str()); found=true; };
     if (found==false){

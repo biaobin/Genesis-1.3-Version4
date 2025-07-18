@@ -1,4 +1,27 @@
 # Change Log
+### [4.6.9] - 2025/07/17
+- Release of version 4.6.9
+- Added the new namelist alter_beam for transformation 1D transformation of the electron distribution by applying periodic energy modulation and the effect of chicanes
+- Added Example 4 to demonstrate the new namelist and to discuss the difference between beamlet and one-4one simulations.
+- 
+### [4.6.8] - 2025/06/19
+- Fixed bug that transformation of particle distribution are now using the energy deviation E_j/<E> -1 and thus avoiding an offset.
+- Fixed issue 225 that for very low current and quiet loading the applied shot noise diverges. This has been limited so that the particles stay in the same or at least adjacent bucket. It doe snot change in the bunching factor since in this case the shotnoise is pure random.
+
+### [4.6.8] - 2025/06/17
+- Added support for output of twiss parameters at each integration step
+- Added support to select only a specific harmonics for output in the main output file
+
+### [4.6.8] - 2025/05/01
+- Release of version 4.6.8
+
+### [4.6.7] - 2025/04/16
+- Fixed bug of wakefield calculation, which caused some rounding errors und as a consequence heap memory corruption.
+- added support for sequence definition in the lattice file. See lattice file for more information.
+- add support for relative paths and sub-directories in profile_file
+
+### [4.6.7] - 2024/11/12
+- Release of version 4.6.7
 
 ### [4.6.6] - 2024/10/21
 - fixed: If beamline elements have not a single explicit argument it causes an error message of unsupported element. This is changed to generating an element with default values.

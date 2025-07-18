@@ -8,11 +8,12 @@ set(CMAKE_CXX_EXTENTIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 # set(CMAKE_INSTALL_RPATH "/usr/local/lib")
-set(CMAKE_CXX_FLAGS '-lstdc++')
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 # developer options
-#set(CMAKE_VERBOSE_MAKEFILE ON)
-#add_compile_options(-Wall -Wextra)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+add_compile_options(-g)
 
 # OpenMPI: preprocessor macro to disable C++ interface (then we don't have to link libmpi_cxx)
 add_compile_definitions(OMPI_SKIP_MPICXX)
@@ -115,7 +116,7 @@ add_library(genesis13 STATIC
         src/Util/Hammerslay.cpp
         src/Util/Inverfc.cpp
         src/Util/RandomU.cpp
-	src/Util/SimpleHandshake.cpp
+	    src/Util/SimpleHandshake.cpp
         src/Util/Sorting.cpp
         src/Util/StringProcessing.cpp
         src/Util/SemaFile.cpp
@@ -160,6 +161,7 @@ add_library(genesis13 STATIC
         src/Loading/ImportTransformation.cpp
         src/Main/AlterSetup.cpp
         src/Main/Dump.cpp
+        src/Main/AlterBeam.cpp
         src/Main/EField.cpp
         src/Main/FieldManipulator.cpp
         src/Main/GenMain.cpp
@@ -196,4 +198,4 @@ add_dependencies(genesis13 get_git_hash)
 
 add_executable(genesis4 src/Main/mainwrap.cpp)
 
-target_link_libraries(genesis4 genesis13 ${_libraries})
+target_link_libraries(genesis4 genesis13 stdc++ ${_libraries})
