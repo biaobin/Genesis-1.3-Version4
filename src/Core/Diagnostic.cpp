@@ -315,16 +315,22 @@ std::map<std::string,OutputInfo> DiagBeam::getTags(FilterDiagnostics & filter_in
     }
     // bunching as one of the fundamental parameter is always on
     tags["bunching"] = {false, false, " "};
+    tags["bunchingimag"] = {false, false, " "};
+    tags["bunchingreal"] = {false, false, " "};
     tags["bunchingphase"] = {false, false, "rad"};
     char buff[30];
     if (exclharm && (nharm > 1)) {
         snprintf(buff, sizeof(buff), "bunching%d", nharm);
+        snprintf(buff, sizeof(buff), "bunchingreal%d", nharm);
+        snprintf(buff, sizeof(buff), "bunchingimag%d", nharm);
         tags[buff] = {false, false, " "};
         snprintf(buff, sizeof(buff), "bunchingphase%d", nharm);
         tags[buff] = {false, false, "rad"};
     } else {
         for (int iharm = 1; iharm < nharm; iharm++) {
             snprintf(buff, sizeof(buff), "bunching%d", iharm + 1);
+            snprintf(buff, sizeof(buff), "bunchingreal%d", iharm + 1);
+            snprintf(buff, sizeof(buff), "bunchingimag%d", iharm + 1);
             tags[buff] = {false, false, " "};
             snprintf(buff, sizeof(buff), "bunchingphase%d", iharm + 1);
             tags[buff] = {false, false, "rad"};
@@ -486,6 +492,8 @@ void DiagBeam::getValues(Beam *beam,std::map<std::string,std::vector<double> >&v
             this->storeValue(val, "pyposition", idx, py1);
         }
         this->storeValue(val, "bunching", idx, std::abs(b[0]));
+        this->storeValue(val, "bunchingreal", idx, b[0].real());
+        this->storeValue(val, "bunchingimag", idx, b[0].imag());
         this->storeValue(val, "bunchingphase", idx, atan2(b[0].imag(), b[0].real()));
         char buff[100];
         if (exclharm && (nharm>1)){
@@ -497,6 +505,13 @@ void DiagBeam::getValues(Beam *beam,std::map<std::string,std::vector<double> >&v
             for (int iharm = 1; iharm < nharm; iharm++) {
                 snprintf(buff, sizeof(buff), "bunching%d", iharm + 1);
                 this->storeValue(val, buff, idx, std::abs(b[iharm]));
+
+                snprintf(buff, sizeof(buff), "bunchingreal%d", iharm + 1);
+                this->storeValue(val, buff, idx, b[iharm].real());
+
+                snprintf(buff, sizeof(buff), "bunchingimag%d", iharm + 1);
+                this->storeValue(val, buff, idx, b[iharm].imag());
+
                 snprintf(buff, sizeof(buff), "bunchingphase%d", iharm + 1);
                 this->storeValue(val, buff, idx, atan2(b[iharm].imag(), b[iharm].real()));
             }

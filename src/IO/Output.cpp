@@ -360,6 +360,9 @@ void Output::writeBeamBuffer(Beam *beam)
     this->writeBuffer(gid, "ysize","m", &beam->ysig);
   }
   this->writeBuffer(gid, "bunching"," ",&beam->bunch);
+  this->writeBuffer(gid, "bunchingreal"," ",&beam->bunch);
+  this->writeBuffer(gid, "bunchingimag"," ",&beam->bunch);
+
   this->writeBuffer(gid, "bunchingphase","rad", &beam->bphi);
   if (beam->outputAux()){
     this->writeBuffer(gid, "efield","eV/m", &beam->efld);
