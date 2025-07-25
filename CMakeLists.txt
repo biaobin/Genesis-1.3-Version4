@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 project(Genesis_1_3_Version4 CXX C)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 option(USE_DPI "Use diagnostic plugin interface" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
