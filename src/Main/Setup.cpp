@@ -22,16 +22,16 @@ Setup::Setup()
   seed=123456789;
 
 
-  beam_global_stat=false;
-  field_global_stat=false;
+  beam_global_stat=true;
+  field_global_stat=true;
 
   exclude_spatial_output=false;
   exclude_fft_output=false;
   exclude_intensity_output=false;
   exclude_energy_output=false;
   exclude_aux_output=false;
-  exclude_current_output=true;
-  exclude_twiss_output=true;
+  exclude_current_output=false;
+  exclude_twiss_output=false;
   exclude_field_dump=false;
   do_write_outfile=true;
 
