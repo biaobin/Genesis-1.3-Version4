@@ -177,6 +177,10 @@ double ProfilePolynom::value(double z)
     val+=c[i]*zsave;
     zsave*=z;
   }
+  
+  //Biaobin,2025-10-17, avoid minus current value    
+  if (val<0.0) val=0.0;
+
   return val;
 }
 
